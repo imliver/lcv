@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка доступа</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .container {
+            display: inline-block;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        input {
+            padding: 10px;
+            margin-top: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Введите код доступа</h1>
+        <input type="text" id="codeInput" placeholder="Введите код">
+        <button onclick="checkCode()">Проверить</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        function checkCode() {
+            const code = document.getElementById('codeInput').value;
+            const message = document.getElementById('message');
+
+            if (code === "11467") {
+                // Если код правильный, перенаправляем на админ панель
+                window.location.href = "/admin-panel";
+            } else {
+                // Если код неправильный, показываем сообщение
+                message.textContent = "Неверный код. Попробуйте снова.";
+                message.style.color = "red";
+
+                // Отправляем данные на сервер (IP, геолокация и т.д.)
+                fetch('/log-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        ip: "<?php echo $_SERVER['REMOTE_ADDR']; ?>", // IP пользователя
+                        location: "<?php echo json_encode(getLocation()); ?>" // Геолокация
+                    })
+                });
+            }
+        }
+
+        // Функция для получения геолокации (пример)
+        function getLocation() {
+            // Здесь можно использовать API для получения геолокации
+            return {
+                latitude: 0,
+                longitude: 0
+            };
+        }
+    </script>
+</body>
+</html>
